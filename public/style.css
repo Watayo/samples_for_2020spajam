@@ -1,0 +1,10 @@
+button {
+  width: 100%;
+  height: 100px;
+}
+
+div {
+  margin: auto;
+  text-align: center;
+  font-size: larger;
+}
