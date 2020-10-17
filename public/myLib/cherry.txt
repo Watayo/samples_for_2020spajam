@@ -1,0 +1,60 @@
+const vertexSource =
+  `
+        uniform float time;
+        mat4 rotationX( in float angle ) {
+	        return mat4(	1.0,		0,			0,			0,
+			 		0, 	cos(angle),	-sin(angle),		0,
+					0, 	sin(angle),	 cos(angle),		0,
+					0, 			0,			  0, 		1);
+        }
+
+        mat4 rotationY( in float angle ) {
+            return mat4(	cos(angle),		0,		sin(angle),	0,
+                                    0,		1.0,			 0,	0,
+                            -sin(angle),	0,		cos(angle),	0,
+                                    0, 		0,				0,	1);
+        }
+
+        mat4 rotationZ( in float angle ) {
+            return mat4(	cos(angle),		-sin(angle),	0,	0,
+                            sin(angle),		cos(angle),		0,	0,
+                                    0,				0,		1,	0,
+                                    0,				0,		0,	1);
+        }
+        void main() {
+            vec4 P = vec4(position, 1.0) * rotationY(time * 0.0001);
+            vec4 mvPosition = modelViewMatrix * P;
+            gl_PointSize = 5.0 * ( 300.0 / -mvPosition.z );
+            gl_Position = projectionMatrix * mvPosition;
+        }
+        `;
+
+// ピクセルシェーダーのソース
+const fragmentSource =
+  `
+        uniform sampler2D cherry;
+
+        void main() {
+			gl_FragColor = texture2D( cherry, gl_PointCoord );
+        }
+        `;
+
+
+let cherryMaterial = new THREE.ShaderMaterial({
+
+  uniforms: uniforms,
+  vertexShader: vertexSource,
+  fragmentShader: fragmentSource,
+
+  blending: THREE.AdditiveBlending,
+  depthTest: false,
+  transparent: true,
+  vertexColors: true
+
+});
+
+// const cherryMaterial = new THREE.MeshBasicMaterial({
+//     color: 0x3366cc
+// });
+const cherry = new THREE.Points(cherryGeo, cherryMaterial);
+scene.add(cherry);
